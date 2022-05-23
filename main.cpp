@@ -1,17 +1,17 @@
-ï»¿/*******************************************************************************
-* ã‚¿ã‚¤ãƒˆãƒ«:	ãƒ¡ã‚¤ãƒ³ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
-* ãƒ—ãƒ­ã‚°ãƒ©ãƒ å:	main.cpp
-* ä½œæˆè€…:		æ—åŠ­ç¾²
-* ä½œæˆæ—¥:			2022/05/18
+/*******************************************************************************
+* ƒ^ƒCƒgƒ‹:	ƒƒCƒ“ƒvƒƒOƒ‰ƒ€
+* ƒvƒƒOƒ‰ƒ€–¼:	main.cpp
+* ì¬Ò:		—Ñ™¡ãº
+* ì¬“ú:			2022/05/18
 *******************************************************************************/
 
 /*******************************************************************************
-* scanf ã®warningé˜²æ­¢
+* scanf ‚Ìwarning–h~
 *******************************************************************************/
 #define _CRT_SECURE_NO_WARNINGS
 
 /*******************************************************************************
-* ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«
+* ƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹
 *******************************************************************************/
 #include <stdio.h>
 #include <conio.h>
@@ -20,134 +20,249 @@
 #include "draw.h"
 
 /*******************************************************************************
-* ãƒã‚¯ãƒ­å®šç¾©
+* ƒ}ƒNƒ’è‹`
 *******************************************************************************/
-#define KB_UP 72
-#define KB_DOWN 80
-#define KB_LEFT 75
-#define KB_RIGHT 77
-#define KB_ESCAPE 27
+#define KB_UP (72)
+#define KB_DOWN (80)
+#define KB_LEFT (75)
+#define KB_RIGHT (77)
+#define KB_ESCAPE (27)
+#define KB_ENTER (13)
+#define KB_W
+#define KB_A
+#define KB_S
+#define KB_D
 
 /*******************************************************************************
-* æ§‹é€ ä½“å®šç¾©
+* \‘¢‘Ì’è‹`
 *******************************************************************************/
 
 /*******************************************************************************
-* ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
-*******************************************************************************/
-
-
-/*******************************************************************************
-* ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
+* ƒvƒƒgƒ^ƒCƒvéŒ¾
 *******************************************************************************/
 
 
 /*******************************************************************************
- é–¢æ•°å:	int main( void )
- å¼•æ•°:		void
- æˆ»ã‚Šå€¤:	æ­£å¸¸çµ‚äº†: intå‹ã® 0
- èª¬æ˜:		ãƒ¡ã‚¤ãƒ³é–¢æ•°
+* ƒOƒ[ƒoƒ‹•Ï”
+*******************************************************************************/
+
+
+/*******************************************************************************
+ ŠÖ”–¼:	int main( void )
+ ˆø”:		void
+ –ß‚è’l:	³íI—¹: intŒ^‚Ì 0
+ à–¾:		ƒƒCƒ“ŠÖ”
 *******************************************************************************/
 int main()
 {
+	int state = 0;
 	srand((unsigned)time(NULL));
 
-	int Window[WINDOW_HEIGHT][WINDOW_WIDTH] = { 0 };
+	char Window[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
 
-	int preWindow[WINDOW_HEIGHT][WINDOW_WIDTH] = { 0 };
+	char preWindow[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
 
 	int key_code = 0;
 
 	int direction_x = 1;
 	int direction_y = 1;
 
-	Rect rect1 = { 0,1,1,4,STAR_MARK };
-	Rect background_up = { 0,0,80,1,X_MARK };
-	Rect background_down = { 0,24,80,1,X_MARK };
-	Rect background_left = { 0,0,1,25,X_MARK };
-	Rect background_right = { 79,0,1,25,X_MARK };
-	Rect ball = { rand() % 39 + 40,rand() % 23+1,1,1,BALL_MARK };
-	int direction1 = 1;
-
+	Rect rect1;
+	Rect background_up;
+	Rect background_down;
+	Rect background_left;
+	Rect background_right;
+	Rect ball;
+	Rect arrow;
+	WordPhrase Title;
+	WordPhrase SecondTitle;
+	WordPhrase GameOver;
+	WordPhrase Singleplayer;
+	WordPhrase Multiplayer;
+	WordPhrase QuitGame;
+	
 	while (1)
 	{
-		key_code = 0;
-
-		if (_kbhit())
-			key_code = _getch();
-
-		switch (key_code)
+		switch (state)
 		{
-		case KB_RIGHT:
-			rect1.StartPoint_x += 1;
+		case 0:
+			//‰Šú‰»
+			rect1 = { 0,1,1,4,'*' };
+			background_up = { 0,0,80,1,'X' };
+			background_down = { 0,24,80,1,'X' };
+			background_left = { 0,0,1,25,'X' };
+			background_right = { 79,0,1,25,'X' };
+			ball = { rand() % 39 + 40,rand() % 23 + 2,1,1,'O' };
+			Title = { 33,8, "Ping Pong" };
+			SecondTitle = { 29,13,"Press Enter to Start" };
+			Singleplayer = { 32,15,"Single Player" };
+			Multiplayer = { 32,16,"Multi Player" };
+			QuitGame = { 32,17,"Quit Game" };
+			arrow = { 30,15,1,1,'>' };
+
+		case 1:
+			//Start Menu
+			
+			while (1)
+			{
+				key_code = 0;
+
+				if (_kbhit())
+					key_code = _getch();
+
+				switch (key_code)
+				{
+				case KB_ENTER:
+					break;
+				case KB_UP:
+					arrow.StartPoint_y = ((arrow.StartPoint_y - 1) % 3) + 15;
+					break;
+				case KB_DOWN:
+					arrow.StartPoint_y = ((arrow.StartPoint_y + 1) % 3) + 15;
+					break;
+				default:
+					break;
+				}
+				FillIn(*Window, Title);
+				FillIn(*Window, SecondTitle);
+				FillIn(*Window, arrow);
+				FillIn(*Window, Singleplayer);
+				FillIn(*Window, Multiplayer);
+				FillIn(*Window, QuitGame);
+				Draw(*Window, *preWindow);
+				Clear(*Window);
+				Sleep(33);
+
+				if (key_code == KB_ENTER && arrow.StartPoint_y == 15)
+				{
+					state = 2;
+					break;
+				}
+				if (key_code == KB_ENTER && arrow.StartPoint_y == 16)
+				{
+					state = 3;
+					break;
+				}
+				if (key_code == KB_ENTER && arrow.StartPoint_y == 17)
+				{
+					return 0;
+				}
+			}
+
 			break;
-		case KB_LEFT:
-			rect1.StartPoint_x += -1;
+		case 2:
+			//Single Player Game
+			while (1)
+			{
+				key_code = 0;
+
+				if (_kbhit())
+					key_code = _getch();
+
+				switch (key_code)
+				{
+				case KB_RIGHT:
+					rect1.StartPoint_x += 1;
+					break;
+				case KB_LEFT:
+					rect1.StartPoint_x += -1;
+					break;
+				case KB_UP:
+					rect1.StartPoint_y += -1;
+					break;
+				case KB_DOWN:
+					rect1.StartPoint_y += 1;
+					break;
+				case KB_ESCAPE:
+					return 0;
+				}
+
+
+				Clear(*Window);
+				FillIn(*Window, rect1);
+				FillIn(*Window, ball);
+				FillIn(*Window, background_down);
+				FillIn(*Window, background_up);
+				//FillIn(*Window, background_left);
+				FillIn(*Window, background_right);
+
+				Draw(*Window, *preWindow);
+
+
+
+				if (rect1.StartPoint_x > 78)
+				{
+					rect1.StartPoint_x = 78;
+				}
+				if (rect1.StartPoint_x < 0)
+				{
+					rect1.StartPoint_x = 0;
+				}
+				if (rect1.StartPoint_y > 20)
+				{
+					rect1.StartPoint_y = 20;
+				}
+				if (rect1.StartPoint_y < 1)
+				{
+					rect1.StartPoint_y = 1;
+				}
+
+				if (ball.StartPoint_x == rect1.StartPoint_x + 1 && ball.StartPoint_y >= rect1.StartPoint_y && ball.StartPoint_y <= rect1.StartPoint_y + rect1.Height)
+				{
+					direction_x *= -1;
+				}
+				if (ball.StartPoint_y == 1 || ball.StartPoint_y == 23)
+				{
+					direction_y *= -1;
+				}
+				if (ball.StartPoint_x == 78)
+				{
+					direction_x *= -1;
+				}
+				if (ball.StartPoint_x < 0)
+				{
+					state = 4;
+					break;
+				}
+
+
+				ball.StartPoint_x += 1 * direction_x;
+				ball.StartPoint_y += 1 * direction_y;
+
+				Sleep(33);
+			}
+
 			break;
-		case KB_UP:
-			rect1.StartPoint_y += -1;
+
+		case 3:
+			//Multi Player Game
 			break;
-		case KB_DOWN:
-			rect1.StartPoint_y += 1;
+
+		case 4:
+			//Game Over
+			while (1)
+			{
+				GameOver = { 35,12,"Game Over" };
+				SecondTitle = { 28,13,"Press Enter to Continue"};
+				FillIn(*Window, GameOver);
+				FillIn(*Window, SecondTitle);
+				Draw(*Window, *preWindow);
+				Sleep(33);
+
+				if (_kbhit())
+					key_code = _getch();
+
+				if (key_code == KB_ENTER)
+				{
+					state = 0;
+					break;
+				}
+			}
 			break;
-		case KB_ESCAPE:
-			return 0;
 		}
-
-
-		Clear(*Window);
-
-		FillIn(*Window, rect1);
-		FillIn(*Window, ball);
-		FillIn(*Window, background_down);
-		FillIn(*Window, background_up);
-		//FillIn(*Window, background_left);
-		FillIn(*Window, background_right);
-
-		Draw(*Window, *preWindow);
-
-		
-
-		if (rect1.StartPoint_x > 78)
-		{
-			rect1.StartPoint_x = 78;
-		}
-		if (rect1.StartPoint_x < 0)
-		{
-			rect1.StartPoint_x = 0;
-		}
-		if (rect1.StartPoint_y > 20)
-		{
-			rect1.StartPoint_y = 20;
-		}
-		if (rect1.StartPoint_y < 1)
-		{
-			rect1.StartPoint_y = 1;
-		}
-
-		if (ball.StartPoint_x == rect1.StartPoint_x + 1 && ball.StartPoint_y >= rect1.StartPoint_y && ball.StartPoint_y <= rect1.StartPoint_y + rect1.Height)
-		{
-			direction_x *= -1;
-		}
-		if (ball.StartPoint_y == 1 || ball.StartPoint_y == 23)
-		{
-			direction_y *= -1;
-		}
-		if (ball.StartPoint_x == 78)
-		{
-			direction_x *= -1;
-		}
-		if (ball.StartPoint_x < 0)
-		{
-			return 0;
-		}
-
-
-		ball.StartPoint_x += 1 * direction_x;
-		ball.StartPoint_y += 1 * direction_y;
-
-		Sleep(33);
 	}
+
+	
 
 	return 0;
 }

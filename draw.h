@@ -1,24 +1,20 @@
-ï»¿#pragma once
+#pragma once
 
 /*******************************************************************************
-* ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«
+* ƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹
 *******************************************************************************/
 #include <stdio.h>
 #include <Windows.h>
 
 /*******************************************************************************
-* ãƒã‚¯ãƒ­å®šç¾©
+* ƒ}ƒNƒ’è‹`
 *******************************************************************************/
 #define WINDOW_WIDTH (80)
 #define WINDOW_HEIGHT (25)
-
-#define SPACE (0)
-#define STAR_MARK (1)
-#define BALL_MARK (2)
-#define X_MARK (3)
+#define MAX_WORD_LENGTH (80)
 
 /*******************************************************************************
-* æ§‹é€ ä½“å®šç¾©
+* \‘¢‘Ì’è‹`
 *******************************************************************************/
 typedef struct rect
 {
@@ -26,90 +22,79 @@ typedef struct rect
 	int StartPoint_y;
 	int Width;
 	int Height;
-	int Type;
+	char DisplaySymbol;
 } Rect;
 
+typedef struct word_phrase
+{
+	int StartPoint_x;
+	int StartPoint_y;
+	const char* word_phrase;
+} WordPhrase;
+
 /*******************************************************************************
-* ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
+* ƒvƒƒgƒ^ƒCƒvéŒ¾
 *******************************************************************************/
-void Draw(int* window, int* prewindow);
-void FillIn(int* window, Rect rect);
+void Draw(char* window, char* prewindow);
+void FillIn(char* window, Rect rect);
+void FillIn(char* window, WordPhrase word);
 void setCursorPosition(int x, int y);
-void Clear(int* window);
+void Clear(char* window);
 
 /*******************************************************************************
-* ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
+* ƒOƒ[ƒoƒ‹•Ï”
 *******************************************************************************/
 
 /*******************************************************************************
- é–¢æ•°å:		void Draw(int* Window_p)
- å¼•æ•°:		int* Window_p
- æˆ»ã‚Šå€¤:		ãªã—
- èª¬æ˜:		windowä¸­ã®å†…å®¹ã‚’ç”»é¢ã«è¡¨ç¤ºã™ã‚‹
+ ŠÖ”–¼:		void Draw(char* Window_p)
+ ˆø”:		char* Window_p
+ –ß‚è’l:		‚È‚µ
+ à–¾:		window’†‚Ì“à—e‚ğ‰æ–Ê‚É•\¦‚·‚é
 *******************************************************************************/
-void Draw(int* window, int* prewindow)
+void Draw(char* window, char* prewindow)
 {
 	for (int row = 0; row < WINDOW_HEIGHT; row++)
 	{
 		for (int column = 0; column < WINDOW_WIDTH; column++)
 		{
-			if (*(window + column + WINDOW_WIDTH * row) == *(prewindow + column + WINDOW_WIDTH * row))
+			if (*(window + column + (WINDOW_WIDTH * row)) == *(prewindow + column + (WINDOW_WIDTH * row)))
 			{
 				continue;
 			}
 
 			setCursorPosition(column, row);
-			switch (*(window + column + WINDOW_WIDTH * row))
-			{
-			case SPACE:
-				printf(" ");
-				break;
+			printf("%c", *(window + column + (WINDOW_WIDTH * row)));
 
-			case STAR_MARK:
-				printf("*");
-				break;
-
-			case BALL_MARK:
-				printf("O");
-				break;
-
-			case X_MARK:
-				printf("X");
-				break;
-			}
-
-			*(prewindow + column + WINDOW_WIDTH * row) = *(window + column + WINDOW_WIDTH * row);
+			*(prewindow + column + (WINDOW_WIDTH * row)) = *(window + column + (WINDOW_WIDTH * row));
 		}
 	}
 }
 
 /*******************************************************************************
- é–¢æ•°å:		void FillIn(int* Window_p, Rect rect)
- å¼•æ•°:		int* Window_p, Rect rect
- æˆ»ã‚Šå€¤:		ãªã—
- èª¬æ˜:		rectã‚’console bufferã«å°å…¥ã™ã‚‹
+ ŠÖ”–¼:		void FillIn(char* Window_p, Rect rect)
+ ˆø”:		char* Window_p, Rect rect
+ –ß‚è’l:		‚È‚µ
+ à–¾:		rect‚ğconsole buffer‚É“±“ü‚·‚é
 *******************************************************************************/
-void FillIn(int* window, Rect rect)
+void FillIn(char* window, Rect rect)
 {
 	for (int row = rect.StartPoint_y; row < rect.StartPoint_y + rect.Height; row++)
 	{
 		for (int column = rect.StartPoint_x; column < rect.StartPoint_x + rect.Width; column++)
 		{
-			switch (rect.Type)
-			{
-			case STAR_MARK:
-				*(window + column + WINDOW_WIDTH * row) = STAR_MARK;
-				break;
+			*(window + column + (WINDOW_WIDTH * row)) = rect.DisplaySymbol;
+		}
+	}
+}
 
-			case BALL_MARK:
-				*(window + column + WINDOW_WIDTH * row) = BALL_MARK;
-				break;
-
-			case X_MARK:
-				*(window + column + WINDOW_WIDTH * row) = X_MARK;
-				break;
-			}
-			
+void FillIn(char* window, WordPhrase wordphrase)
+{
+	size_t length = strlen(wordphrase.word_phrase);
+	for (int row = wordphrase.StartPoint_y; row <= wordphrase.StartPoint_y; row++)
+	{
+		for (int column = wordphrase.StartPoint_x; column < wordphrase.StartPoint_x + length; column++)
+		{
+			*(window + column + (WINDOW_WIDTH * row)) = *(wordphrase.word_phrase + (column - wordphrase.StartPoint_x));
 		}
 	}
 }
@@ -121,13 +106,13 @@ void setCursorPosition(int x, int y)
 	SetConsoleCursorPosition(hOut, coord);
 }
 
-inline void Clear(int* window)
+inline void Clear(char* window)
 {
 	for (int row = 0; row < WINDOW_HEIGHT; row++)
 	{
 		for (int column = 0; column < WINDOW_WIDTH; column++)
 		{
-			*(window + column + WINDOW_WIDTH * row) = 0;
+			*(window + column + (WINDOW_WIDTH * row)) = ' ';
 		}
 	}
 }
