@@ -139,23 +139,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="control.cpp" />
+    <ClCompile Include="draw.cpp" />
     <ClCompile Include="gameover.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="multi_player.cpp" />
     <ClCompile Include="single_player.cpp" />
     <ClCompile Include="title.cpp" />
-    <ClCompile Include="tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="control.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="gameover.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="multi_player.h" />
     <ClInclude Include="single_player.h" />
     <ClInclude Include="title.h" />
-    <ClInclude Include="tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

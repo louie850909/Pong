@@ -13,11 +13,11 @@
 *******************************************************************************/
 enum
 {
-	INIT,
 	GAME_TITLE,
 	SINGLE_PLAYER_MODE,
 	MULTI_PLAYER_MODE,
-	GAMEOVER
+	GAMEOVER,
+	GAME_END
 };
 
 #define WINDOW_WIDTH (80)
@@ -47,15 +47,21 @@ typedef struct word_phrase
 * プロトタイプ宣言
 *******************************************************************************/
 void Init();
+void GameInit();
 void Update();
-void Draw(char* window, char* prewindow);
+void Draw();
 void Uninit();
 
 int GetState();
 void SetState(int state);
 
+char* GetWindow();
+char* GetPreWindow();
+
+bool IsGameInited();
+void SetGameInited(bool is_game_inited);
+
 
 void FillIn(char* window, Rect rect);
 void FillIn(char* window, WordPhrase word);
 void setCursorPosition(int x, int y);
-void Clear(char* window);
