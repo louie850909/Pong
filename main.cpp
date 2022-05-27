@@ -22,17 +22,14 @@
 /*******************************************************************************
 * マクロ定義
 *******************************************************************************/
-#define KB_UP (72)
-#define KB_DOWN (80)
-#define KB_LEFT (75)
-#define KB_RIGHT (77)
-#define KB_ESCAPE (27)
-#define KB_ENTER (13)
-#define KB_W (119)
-#define KB_A (97)
-#define KB_S (115)
-#define KB_D (100)
-
+enum 
+{
+	Init,
+	Title,
+	Single,
+	Multi,
+	Gameover
+};
 /*******************************************************************************
 * 構造体定義
 *******************************************************************************/
@@ -40,13 +37,17 @@
 /*******************************************************************************
 * プロトタイプ宣言
 *******************************************************************************/
+void Init();
+void Update();
+void Draw();
+void Uninit();
 
-
+int GetState();
+void SetState();
 /*******************************************************************************
 * グローバル変数
 *******************************************************************************/
-
-
+int g_State;
 /*******************************************************************************
  関数名:	int main( void )
  引数:		void
@@ -61,8 +62,6 @@ int main()
 	char Window[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
 
 	char preWindow[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
-
-	int key_code = 0;
 
 	int direction_x = 1;
 	int direction_y = 1;
@@ -81,51 +80,61 @@ int main()
 	WordPhrase Singleplayer;
 	WordPhrase Multiplayer;
 	WordPhrase QuitGame;
+	int player1_score;
+	int player2_score;
 	
 	while (1)
 	{
-		switch (state)
+		switch (GetState())
 		{
 		case 0:
 			//初期化
+			GetAsyncKeyState(VK_RETURN);
 			direction_x = 1;
 			direction_y = 1;
 			rect1 = { 0,12,1,4,'*' };
 			rect2 = { 79,12,1,4,'*' };
 			background_up = { 0,0,80,1,'X' };
-			background_down = { 0,24,80,1,'X' };
-			background_left = { 0,0,1,25,'X' };
-			background_right = { 79,0,1,25,'X' };
+			background_down = { 0,23,80,1,'X' };
+			background_left = { 0,0,1,24,'X' };
+			background_right = { 79,0,1,24,'X' };
 			Title = { 33,8, "Ping Pong" };
 			SecondTitle = { 29,13,"Press Enter to Start" };
 			Singleplayer = { 32,15,"Single Player" };
 			Multiplayer = { 32,16,"Multi Player" };
 			QuitGame = { 32,17,"Quit Game" };
 			arrow = { 30,15,1,1,'>' };
+			player1_score = 0;
+			player2_score = 0;
+			Clear(*Window);
 
 		case 1:
 			//Start Menu
-			
 			while (1)
 			{
-				key_code = 0;
-
-				if (_kbhit())
-					key_code = _getch();
-
-				switch (key_code)
+				if (GetAsyncKeyState(VK_UP))
 				{
-				case KB_ENTER:
-					break;
-				case KB_UP:
 					arrow.StartPoint_y = ((arrow.StartPoint_y - 1) % 3) + 15;
-					break;
-				case KB_DOWN:
+				}
+				if (GetAsyncKeyState(VK_DOWN))
+				{
 					arrow.StartPoint_y = ((arrow.StartPoint_y + 1) % 3) + 15;
-					break;
-				default:
+				}
+				if ((GetAsyncKeyState(VK_RETURN)) && (arrow.StartPoint_y == 15))
+				{
+					state = 2;
 					break;
 				}
+				if ((GetAsyncKeyState(VK_RETURN)) && (arrow.StartPoint_y == 16))
+				{
+					state = 3;
+					break;
+				}
+				if ((GetAsyncKeyState(VK_RETURN)) && (arrow.StartPoint_y == 17))
+				{
+					return 0;
+				}
+				
 				FillIn(*Window, Title);
 				FillIn(*Window, SecondTitle);
 				FillIn(*Window, arrow);
@@ -136,92 +145,83 @@ int main()
 				Clear(*Window);
 				Sleep(33);
 
-				if (key_code == KB_ENTER && arrow.StartPoint_y == 15)
-				{
-					state = 2;
-					break;
-				}
-				if (key_code == KB_ENTER && arrow.StartPoint_y == 16)
-				{
-					state = 3;
-					break;
-				}
-				if (key_code == KB_ENTER && arrow.StartPoint_y == 17)
-				{
-					return 0;
-				}
+				
 			}
-
+			Sleep(100);
 			break;
 		case 2:
 			//Single Player Game
-			ball = { rand() % 39 + 40,rand() % 23 + 2,1,1,'O' };
+			ball = { rand() % 38 + 40,rand() % 21 + 2,1,1,'O' };
+
 			while (1)
 			{
-				key_code = 0;
-
-				if (_kbhit())
-					key_code = _getch();
-
-				switch (key_code)
-				{
-				case KB_RIGHT:
-					rect1.StartPoint_x += 1;
-					break;
-				case KB_LEFT:
-					rect1.StartPoint_x += -1;
-					break;
-				case KB_UP:
-					rect1.StartPoint_y += -1;
-					break;
-				case KB_DOWN:
-					rect1.StartPoint_y += 1;
-					break;
-				case KB_ESCAPE:
-					return 0;
-				}
-
-
-				Clear(*Window);
+				SecondTitle = { 28,13,"Press Spcae key to Start" };
 				FillIn(*Window, rect1);
-				FillIn(*Window, ball);
 				FillIn(*Window, background_down);
 				FillIn(*Window, background_up);
 				FillIn(*Window, background_right);
-
+				FillIn(*Window, SecondTitle);
 				Draw(*Window, *preWindow);
-
-
-
-				if (rect1.StartPoint_x > 78)
+				Sleep(33);
+				if (GetAsyncKeyState(VK_SPACE))
 				{
-					rect1.StartPoint_x = 78;
+					Clear(*Window);
+					break;
 				}
-				if (rect1.StartPoint_x < 0)
+			}
+
+			while (1)
+			{
+				if (GetAsyncKeyState(VK_UP))
 				{
-					rect1.StartPoint_x = 0;
+					rect1.StartPoint_y += -1;
 				}
-				if (rect1.StartPoint_y > 20)
+				if (GetAsyncKeyState(VK_DOWN))
 				{
-					rect1.StartPoint_y = 20;
+					rect1.StartPoint_y += 1;
 				}
-				if (rect1.StartPoint_y < 1)
+				if (GetAsyncKeyState(VK_LEFT))
 				{
-					rect1.StartPoint_y = 1;
+					rect1.StartPoint_x += -1;
+				}
+				if (GetAsyncKeyState(VK_RIGHT))
+				{
+					rect1.StartPoint_x += 1;
+				}
+				if (GetAsyncKeyState(VK_ESCAPE))
+				{
+					return 0;
 				}
 
 				ball.StartPoint_x += 1 * direction_x;
 				ball.StartPoint_y += 1 * direction_y;
 
+				if (rect1.StartPoint_x > background_right.StartPoint_x - 1)
+				{
+					rect1.StartPoint_x = background_right.StartPoint_x - 1;
+				}
+				if (rect1.StartPoint_x < 0)
+				{
+					rect1.StartPoint_x = 0;
+				}
+				if (rect1.StartPoint_y > background_down.StartPoint_y - 4)
+				{
+					rect1.StartPoint_y = background_down.StartPoint_y - 4;
+				}
+				if (rect1.StartPoint_y < background_up.StartPoint_y + 1)
+				{
+					rect1.StartPoint_y = background_up.StartPoint_y + 1;
+				}
+
 				if (ball.StartPoint_x == rect1.StartPoint_x + 1 && ball.StartPoint_y >= rect1.StartPoint_y && ball.StartPoint_y <= rect1.StartPoint_y + rect1.Height)
 				{
 					direction_x *= -1;
 				}
-				if (ball.StartPoint_y == 1 || ball.StartPoint_y == 23)
+				if (ball.StartPoint_y <= background_up.StartPoint_y + 1 || ball.StartPoint_y >= background_down.StartPoint_y - 1)
 				{
 					direction_y *= -1;
 				}
-				if (ball.StartPoint_x == 78)
+				if (ball.StartPoint_x >= background_right.StartPoint_x - 1)
 				{
 					direction_x *= -1;
 				}
@@ -231,86 +231,114 @@ int main()
 					break;
 				}
 
+				Clear(*Window);
+				FillIn(*Window, rect1);
+				FillIn(*Window, ball);
+				FillIn(*Window, background_down);
+				FillIn(*Window, background_up);
+				FillIn(*Window, background_right);
+
+				Draw(*Window, *preWindow);
 				Sleep(33);
 			}
-
+			Sleep(100);
 			break;
 
 		case 3:
 			//Multi Player Game
-			ball = { 39,rand() % 23 + 2,1,1,'O' };
+			ball = { 38,rand() % 21 + 2,1,1,'O' };
+
 			while (1)
 			{
-				key_code = 0;
-
-				if (_kbhit())
-					key_code = _getch();
-
-				switch (key_code)
+				SecondTitle = { 28,13,"Press Spcae key to Start" };
+				FillIn(*Window, rect1);
+				FillIn(*Window, rect2);
+				FillIn(*Window, background_down);
+				FillIn(*Window, background_up);
+				FillIn(*Window, SecondTitle);
+				Draw(*Window, *preWindow);
+				Sleep(33);
+				if (GetAsyncKeyState(VK_SPACE))
 				{
-				case KB_RIGHT:
-					rect2.StartPoint_x += 1;
+					Clear(*Window);
 					break;
-				case KB_LEFT:
-					rect2.StartPoint_x += -1;
-					break;
-				case KB_UP:
+				}
+			}
+
+			while (1)
+			{
+				if (GetAsyncKeyState(VK_UP))
+				{
 					rect2.StartPoint_y += -1;
-					break;
-				case KB_DOWN:
+				}
+				if (GetAsyncKeyState(VK_DOWN))
+				{
 					rect2.StartPoint_y += 1;
-					break;
-				case KB_D:
-					rect1.StartPoint_x += 1;
-					break;
-				case KB_A:
-					rect1.StartPoint_x += -1;
-					break;
-				case KB_W:
+				}
+				if (GetAsyncKeyState(VK_LEFT))
+				{
+					rect2.StartPoint_x += -1;
+				}
+				if (GetAsyncKeyState(VK_RIGHT))
+				{
+					rect2.StartPoint_x += 1;
+				}
+				if (GetAsyncKeyState('W'))
+				{
 					rect1.StartPoint_y += -1;
-					break;
-				case KB_S:
+				}
+				if (GetAsyncKeyState('A'))
+				{
+					rect1.StartPoint_x += -1;
+				}
+				if (GetAsyncKeyState('S'))
+				{
 					rect1.StartPoint_y += 1;
-					break;
-				case KB_ESCAPE:
+				}
+				if (GetAsyncKeyState('D'))
+				{
+					rect1.StartPoint_x += 1;
+				}
+				if (GetAsyncKeyState(VK_ESCAPE))
+				{
 					return 0;
 				}
 
-				if (rect1.StartPoint_x > 39)
+				ball.StartPoint_x += 1 * direction_x;
+				ball.StartPoint_y += 1 * direction_y;
+
+				if (rect1.StartPoint_x > WINDOW_WIDTH/2 - 1)
 				{
-					rect1.StartPoint_x = 39;
+					rect1.StartPoint_x = WINDOW_WIDTH/2 - 1;
 				}
 				if (rect1.StartPoint_x < 0)
 				{
 					rect1.StartPoint_x = 0;
 				}
-				if (rect1.StartPoint_y > 20)
+				if (rect1.StartPoint_y > background_down.StartPoint_y - 4)
 				{
-					rect1.StartPoint_y = 20;
+					rect1.StartPoint_y = background_down.StartPoint_y - 4;
 				}
-				if (rect1.StartPoint_y < 1)
+				if (rect1.StartPoint_y < background_up.StartPoint_y + 1)
 				{
-					rect1.StartPoint_y = 1;
+					rect1.StartPoint_y = background_up.StartPoint_y + 1;
 				}
-				if (rect2.StartPoint_x < 40)
+				if (rect2.StartPoint_x < WINDOW_WIDTH/2)
 				{
-					rect2.StartPoint_x = 40;
+					rect2.StartPoint_x = WINDOW_WIDTH/2;
 				}
 				if (rect2.StartPoint_x > 79)
 				{
 					rect2.StartPoint_x = 79;
 				}
-				if (rect2.StartPoint_y > 20)
+				if (rect2.StartPoint_y > background_down.StartPoint_y - 4)
 				{
-					rect2.StartPoint_y = 20;
+					rect2.StartPoint_y = background_down.StartPoint_y - 4;
 				}
-				if (rect2.StartPoint_y < 1)
+				if (rect2.StartPoint_y < background_up.StartPoint_y + 1)
 				{
-					rect2.StartPoint_y = 1;
+					rect2.StartPoint_y = background_up.StartPoint_y + 1;
 				}
-
-				ball.StartPoint_x += 1 * direction_x;
-				ball.StartPoint_y += 1 * direction_y;
 
 				if ((ball.StartPoint_x == rect1.StartPoint_x + 1) && (ball.StartPoint_y >= rect1.StartPoint_y) && (ball.StartPoint_y <= rect1.StartPoint_y + rect1.Height))
 				{
@@ -320,7 +348,7 @@ int main()
 				{
 					direction_x *= -1;
 				}
-				if (ball.StartPoint_y == 1 || ball.StartPoint_y == 23)
+				if (ball.StartPoint_y <= background_up.StartPoint_y + 1 || ball.StartPoint_y >= background_down.StartPoint_y - 1)
 				{
 					direction_y *= -1;
 				}
@@ -347,7 +375,6 @@ int main()
 				Draw(*Window, *preWindow);
 				Sleep(33);
 			}
-
 			break;
 
 		case 4:
@@ -355,16 +382,12 @@ int main()
 			while (1)
 			{
 				GameOver = { 35,12,"Game Over" };
-				SecondTitle = { 28,13,"Press Enter to Continue"};
+				SecondTitle = { 28,13,"Press Space to Continue"};
 				FillIn(*Window, GameOver);
 				FillIn(*Window, SecondTitle);
 				Draw(*Window, *preWindow);
 				Sleep(33);
-
-				if (_kbhit())
-					key_code = _getch();
-
-				if (key_code == KB_ENTER)
+				if (GetAsyncKeyState(VK_SPACE))
 				{
 					state = 0;
 					break;
@@ -377,4 +400,9 @@ int main()
 	
 
 	return 0;
+}
+
+int GetState()
+{
+	return g_State;
 }
