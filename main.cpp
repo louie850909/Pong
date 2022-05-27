@@ -1,7 +1,7 @@
 /*******************************************************************************
-* タイトル:	メインプログラム
+* タイトル:		メインプログラム
 * プログラム名:	main.cpp
-* 作成者:		林劭羲
+* 作成者:			林劭羲
 * 作成日:			2022/05/18
 *******************************************************************************/
 
@@ -13,41 +13,16 @@
 /*******************************************************************************
 * インクルードファイル
 *******************************************************************************/
-#include <stdio.h>
-#include <conio.h>
-#include <Windows.h>
-#include <time.h>
-#include "draw.h"
-
-/*******************************************************************************
-* マクロ定義
-*******************************************************************************/
-enum 
-{
-	Init,
-	Title,
-	Single,
-	Multi,
-	Gameover
-};
+#include "main.h"
 /*******************************************************************************
 * 構造体定義
 *******************************************************************************/
 
 /*******************************************************************************
-* プロトタイプ宣言
-*******************************************************************************/
-void Init();
-void Update();
-void Draw();
-void Uninit();
-
-int GetState();
-void SetState();
-/*******************************************************************************
 * グローバル変数
 *******************************************************************************/
 int g_State;
+
 /*******************************************************************************
  関数名:	int main( void )
  引数:		void
@@ -56,32 +31,6 @@ int g_State;
 *******************************************************************************/
 int main()
 {
-	int state = 0;
-	srand((unsigned)time(NULL));
-
-	char Window[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
-
-	char preWindow[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
-
-	int direction_x = 1;
-	int direction_y = 1;
-
-	Rect rect1;
-	Rect rect2;
-	Rect background_up;
-	Rect background_down;
-	Rect background_left;
-	Rect background_right;
-	Rect ball;
-	Rect arrow;
-	WordPhrase Title;
-	WordPhrase SecondTitle;
-	WordPhrase GameOver;
-	WordPhrase Singleplayer;
-	WordPhrase Multiplayer;
-	WordPhrase QuitGame;
-	int player1_score;
-	int player2_score;
 	
 	while (1)
 	{
@@ -402,7 +351,130 @@ int main()
 	return 0;
 }
 
+void Init()
+{
+	srand((unsigned)time(NULL));
+
+	char Window[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
+
+	char preWindow[WINDOW_HEIGHT][WINDOW_WIDTH] = { ' ' };
+
+	int direction_x = 1;
+	int direction_y = 1;
+
+	Rect rect1;
+	Rect rect2;
+	Rect background_up;
+	Rect background_down;
+	Rect background_left;
+	Rect background_right;
+	Rect ball;
+	Rect arrow;
+	WordPhrase Title;
+	WordPhrase SecondTitle;
+	WordPhrase GameOver;
+	WordPhrase Singleplayer;
+	WordPhrase Multiplayer;
+	WordPhrase QuitGame;
+	int player1_score;
+	int player2_score;
+
+	SetState(GAME_TITLE);
+}
+
+void Update()
+{
+	switch (GetState())
+	{
+	case GAME_TITLE:
+		UpdateTitle();
+		break;
+	}
+}
+
+/*******************************************************************************
+ 関数名:		void Draw(char* Window_p)
+ 引数:		char* Window_p
+ 戻り値:		なし
+ 説明:		window中の内容を画面に表示する
+*******************************************************************************/
+void Draw(char* window, char* prewindow)
+{
+	for (int row = 0; row < WINDOW_HEIGHT; row++)
+	{
+		for (int column = 0; column < WINDOW_WIDTH; column++)
+		{
+			if (*(window + column + (WINDOW_WIDTH * row)) == *(prewindow + column + (WINDOW_WIDTH * row)))
+			{
+				continue;
+			}
+
+			setCursorPosition(column, row);
+			printf("%c", *(window + column + (WINDOW_WIDTH * row)));
+
+			*(prewindow + column + (WINDOW_WIDTH * row)) = *(window + column + (WINDOW_WIDTH * row));
+		}
+	}
+}
+
+void Uninit()
+{
+
+}
+
 int GetState()
 {
 	return g_State;
+}
+
+void SetState(int state)
+{
+	g_State = state;
+}
+
+/*******************************************************************************
+ 関数名:		void FillIn(char* Window_p, Rect rect)
+ 引数:		char* Window_p, Rect rect
+ 戻り値:		なし
+ 説明:		rectをconsole bufferに導入する
+*******************************************************************************/
+void FillIn(char* window, Rect rect)
+{
+	for (int row = rect.StartPoint_y; row < rect.StartPoint_y + rect.Height; row++)
+	{
+		for (int column = rect.StartPoint_x; column < rect.StartPoint_x + rect.Width; column++)
+		{
+			*(window + column + (WINDOW_WIDTH * row)) = rect.DisplaySymbol;
+		}
+	}
+}
+
+void FillIn(char* window, WordPhrase wordphrase)
+{
+	size_t length = strlen(wordphrase.word_phrase);
+	for (int row = wordphrase.StartPoint_y; row <= wordphrase.StartPoint_y; row++)
+	{
+		for (int column = wordphrase.StartPoint_x; column < wordphrase.StartPoint_x + length; column++)
+		{
+			*(window + column + (WINDOW_WIDTH * row)) = *(wordphrase.word_phrase + (column - wordphrase.StartPoint_x));
+		}
+	}
+}
+
+void setCursorPosition(int x, int y)
+{
+	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD coord = { (SHORT)x, (SHORT)y };
+	SetConsoleCursorPosition(hOut, coord);
+}
+
+inline void Clear(char* window)
+{
+	for (int row = 0; row < WINDOW_HEIGHT; row++)
+	{
+		for (int column = 0; column < WINDOW_WIDTH; column++)
+		{
+			*(window + column + (WINDOW_WIDTH * row)) = ' ';
+		}
+	}
 }
