@@ -29,7 +29,7 @@ void InitSinglePlayer()
 	sBackground_down = { 0,23,80,1,'X' };
 	sBackground_right = { 79,0,1,24,'X' };
 	sBall = { rand() % 38 + 40,rand() % 19 + 3,1,1,'O' };
-	sTitle = { 28,13,"Press Space to Start" };
+	sTitle = { 29,13,"Press Space to Start" };
 
 	sScore = { 28,24,"Score : " };
 	sprintf_s(sstrScore, "%d", sPlayerScore); //change int to char
@@ -46,10 +46,12 @@ void UpdateSinglePlayer()
 {
 	if (smode == GAME_INIT) // Only show on when first time get in the game
 	{
+		sBall = { 0,0,1,1,' ' };
 		while (1)
 		{
 			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 			{
+				sBall = { 39,rand() % 19 + 3,1,1,'O' };
 				break;
 			}
 			FillIn(GetWindow(), sTitle);
