@@ -8,26 +8,56 @@ Rect sBackground_down;
 Rect sBackground_right;
 Rect sBall;
 
+WordPhrase sTitle;
+WordPhrase sScore;
+WordPhrase sScoreNum;
+
 int sdirection_x;
 int sdirection_y;
+
+int sPlayerScore;
+char sstrScore[12];
 
 int smode;
 
 void InitSinglePlayer()
 {
+	sPlayerScore = 0;
+	
 	sRect1 = { 0,12,1,4,'*' };
 	sBackground_up = { 0,0,80,1,'X' };
 	sBackground_down = { 0,23,80,1,'X' };
 	sBackground_right = { 79,0,1,24,'X' };
-	sBall = { rand() % 38 + 40,rand() % 20 + 2,1,1,'O' };
+	sBall = { rand() % 38 + 40,rand() % 19 + 3,1,1,'O' };
+	sTitle = { 28,13,"Press Space to Start" };
+
+	sScore = { 28,24,"Score : " };
+	sprintf_s(sstrScore, "%d", sPlayerScore); //change int to char
+	sScoreNum = { 40,24,sstrScore };//store score number
+
 	sdirection_x = 1;
 	sdirection_y = 1;
-	smode = -1;
+	smode = GAME_INIT;
+	
 	ClearWindow(GetWindow());
 }
 
 void UpdateSinglePlayer()
 {
+	if (smode == GAME_INIT) // Only show on when first time get in the game
+	{
+		while (1)
+		{
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+			{
+				break;
+			}
+			FillIn(GetWindow(), sTitle);
+			DrawSinglePlayer();
+		}
+		smode = GAME_RUNNING; // Game Start
+	}
+
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
 		sRect1.StartPoint_y += -1;
@@ -73,6 +103,9 @@ void UpdateSinglePlayer()
 		(sBall.StartPoint_y >= sRect1.StartPoint_y) && 
 		(sBall.StartPoint_y <= sRect1.StartPoint_y + sRect1.Height))
 	{
+		sPlayerScore += 1;
+		sprintf_s(sstrScore, "%d", sPlayerScore);
+		sScoreNum.word_phrase = sstrScore;
 		sdirection_x *= -1;
 	}
 	if ((sBall.StartPoint_y <= sBackground_up.StartPoint_y + 1) || 
@@ -97,6 +130,8 @@ void DrawSinglePlayer()
 	FillIn(GetWindow(), sBackground_down);
 	FillIn(GetWindow(), sBackground_up);
 	FillIn(GetWindow(), sBackground_right);
+	FillIn(GetWindow(), sScore);
+	FillIn(GetWindow(), sScoreNum);
 	Draw(GetWindow(), GetPreWindow());
 	ClearWindow(GetWindow());
 	Sleep(33);
