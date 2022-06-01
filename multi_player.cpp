@@ -103,7 +103,7 @@ void UpdateMultiPlayer()
 		}
 		else if (((mPlayer1Score > GAME_SET_NUM - 2) || (mPlayer2Score > GAME_SET_NUM - 2)))
 		{
-			mSecondTitle = { 35,11,"GAME  SET" };
+			mSecondTitle = { 34,11,"Match  Point" };
 			gameset = true;
 		}
 
